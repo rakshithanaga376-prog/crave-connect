@@ -17,10 +17,10 @@ export default function RestaurantDashboard() {
   const myOrders = orders.filter(o => myRestaurantIds.includes(o.restaurantId));
   const myItems = mockFoodItems.filter(f => myRestaurantIds.includes(f.restaurantId));
 
-  // Restaurant gets 75% of order total
+  // Restaurant gets 85% of order total (much more than delivery partner's 10%)
   const totalRevenue = myOrders
     .filter(o => o.paymentStatus === 'paid' && o.status !== 'cancelled')
-    .reduce((s, o) => s + Math.round(o.totalAmount * 0.75), 0);
+    .reduce((s, o) => s + Math.round(o.totalAmount * 0.85), 0);
   const todayOrders = myOrders.filter(o => {
     const today = new Date().toISOString().split('T')[0];
     return o.createdAt.startsWith(today);
@@ -29,13 +29,13 @@ export default function RestaurantDashboard() {
   const newOrders = myOrders.filter(o => newOrderIds.includes(o.id)).length;
 
   const chartData = [
-    { day: 'Mon', orders: 12, revenue: 4500 },
-    { day: 'Tue', orders: 18, revenue: 6800 },
-    { day: 'Wed', orders: 15, revenue: 5200 },
-    { day: 'Thu', orders: 22, revenue: 8100 },
-    { day: 'Fri', orders: 28, revenue: 10500 },
-    { day: 'Sat', orders: 35, revenue: 13200 },
-    { day: 'Sun', orders: 30, revenue: 11400 },
+    { day: 'Mon', orders: 12, revenue: 8500 },
+    { day: 'Tue', orders: 18, revenue: 12800 },
+    { day: 'Wed', orders: 15, revenue: 9200 },
+    { day: 'Thu', orders: 22, revenue: 15100 },
+    { day: 'Fri', orders: 28, revenue: 19500 },
+    { day: 'Sat', orders: 35, revenue: 24200 },
+    { day: 'Sun', orders: 30, revenue: 21400 },
   ];
 
   return (
