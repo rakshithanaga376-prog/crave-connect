@@ -2,21 +2,31 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useOrders } from '@/contexts/OrderContext';
 import { mockRestaurants, mockFoodItems } from '@/data/mock-data';
 import { StatCard } from '@/components/shared/SharedComponents';
-import { ShoppingBag, DollarSign, UtensilsCrossed, TrendingUp } from 'lucide-react';
+import { ShoppingBag, DollarSign, UtensilsCrossed, TrendingUp, Bell } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export default function RestaurantDashboard() {
   const { user } = useAuth();
-  const { orders } = useOrders();
+  const { orders, newOrderIds } = useOrders();
+  const navigate = useNavigate();
 
   const myRestaurants = mockRestaurants.filter(r => r.ownerId === user?.id);
   const myRestaurantIds = myRestaurants.map(r => r.id);
   const myOrders = orders.filter(o => myRestaurantIds.includes(o.restaurantId));
   const myItems = mockFoodItems.filter(f => myRestaurantIds.includes(f.restaurantId));
 
-  const totalRevenue = myOrders.filter(o => o.paymentStatus === 'paid').reduce((s, o) => s + o.totalAmount, 0);
-  const todayOrders = myOrders.filter(o => o.createdAt.startsWith('2026-04-05')).length;
+  // Restaurant gets 75% of order total
+  const totalRevenue = myOrders
+    .filter(o => o.paymentStatus === 'paid' && o.status !== 'cancelled')
+    .reduce((s, o) => s + Math.round(o.totalAmount * 0.75), 0);
+  const todayOrders = myOrders.filter(o => {
+    const today = new Date().toISOString().split('T')[0];
+    return o.createdAt.startsWith(today);
+  }).length;
   const activeOrders = myOrders.filter(o => !['delivered', 'cancelled'].includes(o.status)).length;
+  const newOrders = myOrders.filter(o => newOrderIds.includes(o.id)).length;
 
   const chartData = [
     { day: 'Mon', orders: 12, revenue: 4500 },
@@ -30,10 +40,21 @@ export default function RestaurantDashboard() {
 
   return (
     <div className="container px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Restaurant Dashboard</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Restaurant Dashboard</h1>
+        {newOrders > 0 && (
+          <Button 
+            onClick={() => navigate('/restaurant/orders')} 
+            className="gradient-neon text-background neon-glow-green animate-pulse"
+          >
+            <Bell className="w-4 h-4 mr-2 animate-bounce" />
+            {newOrders} New Order{newOrders > 1 ? 's' : ''}!
+          </Button>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Total Revenue" value={`₹${totalRevenue.toLocaleString('en-IN')}`} icon={DollarSign} glowColor="green" />
+        <StatCard title="Total Earnings (75%)" value={`₹${totalRevenue.toLocaleString('en-IN')}`} icon={DollarSign} glowColor="green" />
         <StatCard title="Today's Orders" value={todayOrders} icon={ShoppingBag} glowColor="orange" />
         <StatCard title="Active Orders" value={activeOrders} icon={TrendingUp} glowColor="cyan" />
         <StatCard title="Menu Items" value={myItems.length} icon={UtensilsCrossed} glowColor="green" />
