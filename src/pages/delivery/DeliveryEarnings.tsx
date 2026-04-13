@@ -9,13 +9,13 @@ export default function DeliveryEarnings() {
   const partner = mockDeliveryPartners.find(dp => dp.userId === user?.id) || mockDeliveryPartners[0];
 
   const earningsData = [
-    { day: 'Mon', earnings: 450, deliveries: 5 },
-    { day: 'Tue', earnings: 680, deliveries: 8 },
-    { day: 'Wed', earnings: 520, deliveries: 6 },
-    { day: 'Thu', earnings: 810, deliveries: 9 },
-    { day: 'Fri', earnings: 1050, deliveries: 12 },
-    { day: 'Sat', earnings: 1320, deliveries: 15 },
-    { day: 'Sun', earnings: 1140, deliveries: 13 },
+    { day: 'Mon', earnings: 250, deliveries: 5 },
+    { day: 'Tue', earnings: 380, deliveries: 8 },
+    { day: 'Wed', earnings: 320, deliveries: 6 },
+    { day: 'Thu', earnings: 410, deliveries: 9 },
+    { day: 'Fri', earnings: 550, deliveries: 12 },
+    { day: 'Sat', earnings: 720, deliveries: 15 },
+    { day: 'Sun', earnings: 640, deliveries: 13 },
   ];
 
   const weeklyTotal = earningsData.reduce((s, d) => s + d.earnings, 0);
