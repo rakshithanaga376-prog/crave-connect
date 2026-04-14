@@ -5,6 +5,7 @@ import { StatCard, OrderStatusBadge } from '@/components/shared/SharedComponents
 import { Truck, DollarSign, Package, MapPin, Navigation, Phone, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { sounds } from '@/utils/sounds';
 
 export default function DeliveryDashboard() {
   const { user } = useAuth();
@@ -28,7 +29,8 @@ export default function DeliveryDashboard() {
 
   const handleUpdateStatus = (orderId: string, status: 'out_for_delivery' | 'delivered') => {
     updateOrderStatus(orderId, status);
-    toast.success(status === 'delivered' ? 'Delivery completed! 🎉' : 'Picked up!');
+    if (status === 'delivered') { sounds.deliveryComplete(); toast.success('Delivery completed! 🎉'); }
+    else { sounds.statusUpdate(); toast.success('Picked up!'); }
   };
 
   const openInMaps = (address: string) => {
