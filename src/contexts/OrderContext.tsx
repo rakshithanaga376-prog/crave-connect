@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 import { Order, mockOrders, mockDeliveryPartners } from '@/data/mock-data';
 import { toast } from 'sonner';
 import { sounds } from '@/utils/sounds';
-import { toast } from 'sonner';
 
 interface OrderContextType {
   orders: Order[];
