@@ -92,6 +92,18 @@ export default function DeliveryDashboard() {
                   <p className="font-bold text-primary">Total: ₹{order.totalAmount} • {order.paymentMethod.toUpperCase()}</p>
                   <p className="text-xs text-neon-green">Your earning: ₹{Math.round(order.totalAmount * 0.15)}</p>
                 </div>
+                {/* Embedded Map */}
+                <div className="rounded-lg overflow-hidden border border-border mb-4">
+                  <iframe
+                    title={`Map for ${order.deliveryAddress}`}
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(order.deliveryAddress)}&output=embed`}
+                  />
+                </div>
                 <div className="flex gap-2">
                   <Button onClick={() => handleUpdateStatus(order.id, 'delivered')} className="flex-1 gradient-neon text-background neon-glow-green">
                     ✅ Mark as Delivered

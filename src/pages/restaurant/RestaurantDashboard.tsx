@@ -18,9 +18,11 @@ export default function RestaurantDashboard() {
   const myItems = mockFoodItems.filter(f => myRestaurantIds.includes(f.restaurantId));
 
   // Restaurant gets 85% of order total (much more than delivery partner's 10%)
-  const totalRevenue = myOrders
+  // Base earnings of ₹1,00,000 + 85% from orders
+  const orderRevenue = myOrders
     .filter(o => o.paymentStatus === 'paid' && o.status !== 'cancelled')
     .reduce((s, o) => s + Math.round(o.totalAmount * 0.85), 0);
+  const totalRevenue = 100000 + orderRevenue;
   const todayOrders = myOrders.filter(o => {
     const today = new Date().toISOString().split('T')[0];
     return o.createdAt.startsWith(today);
@@ -54,7 +56,7 @@ export default function RestaurantDashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Total Earnings (75%)" value={`₹${totalRevenue.toLocaleString('en-IN')}`} icon={DollarSign} glowColor="green" />
+        <StatCard title="Total Earnings (85%)" value={`₹${totalRevenue.toLocaleString('en-IN')}`} icon={DollarSign} glowColor="green" />
         <StatCard title="Today's Orders" value={todayOrders} icon={ShoppingBag} glowColor="orange" />
         <StatCard title="Active Orders" value={activeOrders} icon={TrendingUp} glowColor="cyan" />
         <StatCard title="Menu Items" value={myItems.length} icon={UtensilsCrossed} glowColor="green" />
