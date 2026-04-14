@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, CreditCard, Smartphone, Banknote, CalendarIcon, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { sounds } from '@/utils/sounds';
 
 export default function Checkout() {
   const { items, totalAmount, restaurantId, clearCart } = useCart();
@@ -31,7 +32,7 @@ export default function Checkout() {
   if (items.length === 0) { navigate('/cart'); return null; }
 
   const handlePlaceOrder = () => {
-    if (!address.trim()) { toast.error('Please enter delivery address'); return; }
+    if (!address.trim()) { toast.error('Please enter delivery address'); sounds.error(); return; }
 
     const order = addOrder({
       userId: user!.id,
@@ -46,6 +47,7 @@ export default function Checkout() {
     });
 
     clearCart();
+    sounds.orderPlaced();
     toast.success('Order placed successfully! 🎉');
     navigate(`/order/${order.id}`);
   };

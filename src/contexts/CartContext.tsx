@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { FoodItem } from '@/data/mock-data';
+import { sounds } from '@/utils/sounds';
 
 export interface CartItem {
   foodItem: FoodItem;
@@ -33,6 +34,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     setRestaurantId(foodItem.restaurantId);
+    sounds.addToCart();
     setItems(prev => {
       const existing = prev.find(i => i.foodItem.id === foodItem.id);
       if (existing) {
@@ -43,6 +45,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const removeItem = (foodItemId: string) => {
+    sounds.removeFromCart();
     setItems(prev => {
       const next = prev.filter(i => i.foodItem.id !== foodItemId);
       if (next.length === 0) setRestaurantId(null);

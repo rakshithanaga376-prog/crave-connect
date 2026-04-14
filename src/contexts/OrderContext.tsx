@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { Order, mockOrders, mockDeliveryPartners } from '@/data/mock-data';
 import { toast } from 'sonner';
+import { sounds } from '@/utils/sounds';
 
 interface OrderContextType {
   orders: Order[];
@@ -34,6 +35,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     setNewOrderIds(prev => [...prev, newOrder.id]);
     
     // Notify restaurant owner
+    // Play notification sound
+    sounds.orderNotification();
+    
     toast.info(`🔔 New order #${newOrder.id.slice(-4)} received!`, {
       duration: 5000,
       description: `${newOrder.items.map(i => `${i.name} × ${i.quantity}`).join(', ')} • ₹${newOrder.totalAmount}`,
