@@ -45,18 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Demo login (mock)
-  const login = (email: string, _password: string): boolean => {
-    const found = mockUsers.find(u => u.email === email);
-    if (found) { setUser(found); return true; }
-    const newUser: User = {
-      id: `u${Date.now()}`, name: email.split('@')[0], email,
-      phone: '+91 00000 00000', role: 'customer', address: 'Bengaluru, India',
-    };
-    setUser(newUser);
-    return true;
-  };
-
   // Real email/password login
   const loginWithEmail = async (email: string, password: string): Promise<boolean> => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
