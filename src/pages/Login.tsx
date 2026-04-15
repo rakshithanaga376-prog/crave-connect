@@ -4,7 +4,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UtensilsCrossed, Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react';
 import { lovable } from '@/integrations/lovable';
 import { toast } from 'sonner';
@@ -16,16 +15,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
-  const { login, loginWithEmail } = useAuth();
+  const { loginWithEmail } = useAuth();
   const navigate = useNavigate();
-
-  const handleDemoLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (login(email, password)) {
-      sounds.click();
-      navigate('/');
-    }
-  };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,16 +45,6 @@ export default function Login() {
       sounds.error();
     } finally {
       setGoogleLoading(false);
-    }
-  };
-
-  const demoLogin = (email: string) => {
-    sounds.click();
-    if (login(email, 'demo')) {
-      const user = email.includes('admin') ? '/admin' :
-                   email.includes('deepak') ? '/delivery' :
-                   email.includes('amit') ? '/restaurant' : '/';
-      navigate(user);
     }
   };
 
@@ -114,76 +95,32 @@ export default function Login() {
             </div>
           </div>
 
-          <Tabs defaultValue="demo" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="demo">Demo Login</TabsTrigger>
-              <TabsTrigger value="email">Email / Password</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="demo">
-              <form onSubmit={handleDemoLogin} className="space-y-4">
-                <div>
-                  <Label htmlFor="demo-email">Email</Label>
-                  <div className="relative mt-1.5">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input id="demo-email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="bg-muted/50 border-border pl-10" required />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="demo-password">Password</Label>
-                  <div className="relative mt-1.5">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input id="demo-password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="bg-muted/50 border-border pl-10 pr-10" required />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                <Button type="submit" className="w-full gradient-neon text-background font-semibold hover:opacity-90 neon-glow-green">
-                  Sign In (Demo)
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="email">
-              <form onSubmit={handleEmailLogin} className="space-y-4">
-                <div>
-                  <Label htmlFor="real-email">Email</Label>
-                  <div className="relative mt-1.5">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input id="real-email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="bg-muted/50 border-border pl-10" required />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="real-password">Password</Label>
-                  <div className="relative mt-1.5">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input id="real-password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="bg-muted/50 border-border pl-10 pr-10" required />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                <Button type="submit" className="w-full gradient-neon text-background font-semibold hover:opacity-90 neon-glow-green" disabled={emailLoading}>
-                  {emailLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                  Sign In
-                </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  Don't have an account? <Link to="/register" className="text-primary hover:underline">Sign up</Link>
-                </p>
-              </form>
-            </TabsContent>
-          </Tabs>
-
-          <div className="mt-6">
-            <p className="text-xs text-muted-foreground text-center mb-3">Quick demo login</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" size="sm" onClick={() => demoLogin('rahul@example.com')} className="text-xs border-neon-green/30 text-neon-green hover:bg-neon-green/10">👤 Customer</Button>
-              <Button variant="outline" size="sm" onClick={() => demoLogin('amit@example.com')} className="text-xs border-neon-orange/30 text-neon-orange hover:bg-neon-orange/10">🍽️ Restaurant</Button>
-              <Button variant="outline" size="sm" onClick={() => demoLogin('deepak@example.com')} className="text-xs border-neon-cyan/30 text-neon-cyan hover:bg-neon-cyan/10">🚴 Delivery</Button>
-              <Button variant="outline" size="sm" onClick={() => demoLogin('admin@example.com')} className="text-xs border-neon-purple/30 text-neon-purple hover:bg-neon-purple/10">🧑‍💼 Admin</Button>
+          <form onSubmit={handleEmailLogin} className="space-y-4">
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <div className="relative mt-1.5">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="bg-muted/50 border-border pl-10" required />
+              </div>
             </div>
-          </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <div className="relative mt-1.5">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="bg-muted/50 border-border pl-10 pr-10" required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <Button type="submit" className="w-full gradient-neon text-background font-semibold hover:opacity-90 neon-glow-green" disabled={emailLoading}>
+              {emailLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Sign In
+            </Button>
+            <p className="text-xs text-center text-muted-foreground">
+              Don't have an account? <Link to="/register" className="text-primary hover:underline">Sign up</Link>
+            </p>
+          </form>
         </div>
       </div>
     </div>

@@ -5,10 +5,8 @@ import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => boolean;
   loginWithEmail: (email: string, password: string) => Promise<boolean>;
   signupWithEmail: (email: string, password: string, name: string, phone: string, role: User['role']) => Promise<boolean>;
-  register: (name: string, email: string, phone: string, role: User['role']) => boolean;
   logout: () => void;
   switchRole: (role: User['role']) => void;
   isAuthenticated: boolean;
@@ -47,18 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Demo login (mock)
-  const login = (email: string, _password: string): boolean => {
-    const found = mockUsers.find(u => u.email === email);
-    if (found) { setUser(found); return true; }
-    const newUser: User = {
-      id: `u${Date.now()}`, name: email.split('@')[0], email,
-      phone: '+91 00000 00000', role: 'customer', address: 'Bengaluru, India',
-    };
-    setUser(newUser);
-    return true;
-  };
-
   // Real email/password login
   const loginWithEmail = async (email: string, password: string): Promise<boolean> => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -88,12 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
-  const register = (name: string, email: string, phone: string, role: User['role']): boolean => {
-    const newUser: User = { id: `u${Date.now()}`, name, email, phone, role, address: 'Bengaluru, India' };
-    setUser(newUser);
-    return true;
-  };
-
   const logout = () => {
     supabase.auth.signOut();
     setUser(null);
@@ -107,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, loginWithEmail, signupWithEmail, register, logout, switchRole, isAuthenticated: !!user, loading }}>
+    <AuthContext.Provider value={{ user, loginWithEmail, signupWithEmail, logout, switchRole, isAuthenticated: !!user, loading }}>
       {children}
     </AuthContext.Provider>
   );
