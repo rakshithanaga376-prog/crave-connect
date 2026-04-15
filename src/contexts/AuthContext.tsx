@@ -5,10 +5,8 @@ import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => boolean;
   loginWithEmail: (email: string, password: string) => Promise<boolean>;
   signupWithEmail: (email: string, password: string, name: string, phone: string, role: User['role']) => Promise<boolean>;
-  register: (name: string, email: string, phone: string, role: User['role']) => boolean;
   logout: () => void;
   switchRole: (role: User['role']) => void;
   isAuthenticated: boolean;
