@@ -74,12 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
-  const register = (name: string, email: string, phone: string, role: User['role']): boolean => {
-    const newUser: User = { id: `u${Date.now()}`, name, email, phone, role, address: 'Bengaluru, India' };
-    setUser(newUser);
-    return true;
-  };
-
   const logout = () => {
     supabase.auth.signOut();
     setUser(null);
@@ -93,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, loginWithEmail, signupWithEmail, register, logout, switchRole, isAuthenticated: !!user, loading }}>
+    <AuthContext.Provider value={{ user, loginWithEmail, signupWithEmail, logout, switchRole, isAuthenticated: !!user, loading }}>
       {children}
     </AuthContext.Provider>
   );
