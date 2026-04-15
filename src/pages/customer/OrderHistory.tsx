@@ -1,13 +1,17 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useOrders } from '@/contexts/OrderContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockRestaurants } from '@/data/mock-data';
 import { OrderStatusBadge } from '@/components/shared/SharedComponents';
-import { Package } from 'lucide-react';
+import { Package, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import ReviewDialog from '@/components/ReviewDialog';
 
 export default function OrderHistory() {
   const { user } = useAuth();
   const { getOrdersByUser } = useOrders();
+  const [reviewOrder, setReviewOrder] = useState<{ id: string; restaurantId: string; restaurantName: string } | null>(null);
 
   const orders = getOrdersByUser(user!.id);
 
@@ -28,25 +32,47 @@ export default function OrderHistory() {
         {orders.map(order => {
           const restaurant = mockRestaurants.find(r => r.id === order.restaurantId);
           return (
-            <Link key={order.id} to={`/order/${order.id}`} className="glass-card p-4 block hover:border-primary/20 transition-all">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  {restaurant && <img src={restaurant.image} alt={restaurant.name} className="w-12 h-12 rounded-lg object-cover" />}
-                  <div>
-                    <p className="font-semibold">{restaurant?.name}</p>
-                    <p className="text-xs text-muted-foreground">{order.items.map(i => `${i.name} ×${i.quantity}`).join(', ')}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{new Date(order.createdAt).toLocaleString('en-IN')}</p>
+            <div key={order.id} className="glass-card p-4 hover:border-primary/20 transition-all">
+              <Link to={`/order/${order.id}`} className="block">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    {restaurant && <img src={restaurant.image} alt={restaurant.name} className="w-12 h-12 rounded-lg object-cover" />}
+                    <div>
+                      <p className="font-semibold">{restaurant?.name}</p>
+                      <p className="text-xs text-muted-foreground">{order.items.map(i => `${i.name} ×${i.quantity}`).join(', ')}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{new Date(order.createdAt).toLocaleString('en-IN')}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <OrderStatusBadge status={order.status} />
+                    <p className="text-sm font-bold text-primary mt-2">₹{order.totalAmount}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <OrderStatusBadge status={order.status} />
-                  <p className="text-sm font-bold text-primary mt-2">₹{order.totalAmount}</p>
-                </div>
-              </div>
-            </Link>
+              </Link>
+              {order.status === 'delivered' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 w-full border-neon-orange/30 text-neon-orange hover:bg-neon-orange/10"
+                  onClick={() => setReviewOrder({ id: order.id, restaurantId: order.restaurantId, restaurantName: restaurant?.name || 'Restaurant' })}
+                >
+                  <Star className="w-4 h-4 mr-1.5" /> Rate & Review
+                </Button>
+              )}
+            </div>
           );
         })}
       </div>
+
+      {reviewOrder && (
+        <ReviewDialog
+          open={!!reviewOrder}
+          onOpenChange={open => { if (!open) setReviewOrder(null); }}
+          orderId={reviewOrder.id}
+          restaurantId={reviewOrder.restaurantId}
+          restaurantName={reviewOrder.restaurantName}
+        />
+      )}
     </div>
   );
 }
