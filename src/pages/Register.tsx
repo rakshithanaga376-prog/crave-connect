@@ -4,7 +4,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UtensilsCrossed, Loader2, Eye, EyeOff } from 'lucide-react';
 import { lovable } from '@/integrations/lovable';
 import { toast } from 'sonner';
@@ -27,19 +26,10 @@ export default function Register() {
   const [role, setRole] = useState<User['role']>('customer');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { register, signupWithEmail } = useAuth();
+  const { signupWithEmail } = useAuth();
   const navigate = useNavigate();
 
-  const handleDemoRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    sounds.click();
-    if (register(name, email, phone, role)) {
-      sounds.orderPlaced();
-      navigate(role === 'customer' ? '/' : `/${role}`);
-    }
-  };
-
-  const handleRealRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) { toast.error('Password must be at least 6 characters'); sounds.error(); return; }
     setLoading(true);
@@ -78,7 +68,6 @@ export default function Register() {
         </div>
 
         <div className="glass-card p-8">
-          {/* Google Sign Up */}
           <Button
             type="button" variant="outline"
             className="w-full mb-4 border-border hover:bg-muted/50 h-11 text-sm font-medium"
@@ -100,76 +89,45 @@ export default function Register() {
             <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">or</span></div>
           </div>
 
-          <Tabs defaultValue="real" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="real">Email Signup</TabsTrigger>
-              <TabsTrigger value="demo">Demo Signup</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="real">
-              <form onSubmit={handleRealRegister} className="space-y-3">
-                <div>
-                  <Label>Role</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-1.5">
-                    {roles.map(r => (
-                      <button key={r.value} type="button" onClick={() => { setRole(r.value); sounds.click(); }}
-                        className={`p-2.5 rounded-lg border text-left transition-all text-sm ${role === r.value ? 'border-primary bg-primary/10 neon-glow-green' : 'border-border bg-muted/30 hover:bg-muted/50'}`}>
-                        <span className="text-lg">{r.icon}</span>
-                        <p className="font-medium text-xs mt-1">{r.label}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="r-name">Full Name</Label>
-                  <Input id="r-name" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} className="mt-1 bg-muted/50 border-border" required />
-                </div>
-                <div>
-                  <Label htmlFor="r-email">Email</Label>
-                  <Input id="r-email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="mt-1 bg-muted/50 border-border" required />
-                </div>
-                <div>
-                  <Label htmlFor="r-phone">Phone</Label>
-                  <Input id="r-phone" type="tel" placeholder="+91 98765 43210" value={phone} onChange={e => setPhone(e.target.value)} className="mt-1 bg-muted/50 border-border" required />
-                </div>
-                <div>
-                  <Label htmlFor="r-pass">Password</Label>
-                  <div className="relative mt-1">
-                    <Input id="r-pass" type={showPassword ? 'text' : 'password'} placeholder="Min. 6 characters" value={password} onChange={e => setPassword(e.target.value)} className="bg-muted/50 border-border pr-10" required />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                <Button type="submit" className="w-full gradient-neon text-background font-semibold hover:opacity-90 neon-glow-green" disabled={loading}>
-                  {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                  Create Account
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="demo">
-              <form onSubmit={handleDemoRegister} className="space-y-3">
-                <div>
-                  <Label>Role</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-1.5">
-                    {roles.map(r => (
-                      <button key={r.value} type="button" onClick={() => { setRole(r.value); sounds.click(); }}
-                        className={`p-2.5 rounded-lg border text-left transition-all text-sm ${role === r.value ? 'border-primary bg-primary/10 neon-glow-green' : 'border-border bg-muted/30 hover:bg-muted/50'}`}>
-                        <span className="text-lg">{r.icon}</span>
-                        <p className="font-medium text-xs mt-1">{r.label}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div><Label htmlFor="d-name">Full Name</Label><Input id="d-name" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} className="mt-1 bg-muted/50 border-border" required /></div>
-                <div><Label htmlFor="d-email">Email</Label><Input id="d-email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="mt-1 bg-muted/50 border-border" required /></div>
-                <div><Label htmlFor="d-phone">Phone</Label><Input id="d-phone" type="tel" placeholder="+91 98765 43210" value={phone} onChange={e => setPhone(e.target.value)} className="mt-1 bg-muted/50 border-border" required /></div>
-                <div><Label htmlFor="d-pass">Password</Label><Input id="d-pass" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="mt-1 bg-muted/50 border-border" required /></div>
-                <Button type="submit" className="w-full gradient-neon text-background font-semibold hover:opacity-90 neon-glow-green">Create Demo Account</Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleRegister} className="space-y-3">
+            <div>
+              <Label>Role</Label>
+              <div className="grid grid-cols-2 gap-2 mt-1.5">
+                {roles.map(r => (
+                  <button key={r.value} type="button" onClick={() => { setRole(r.value); sounds.click(); }}
+                    className={`p-2.5 rounded-lg border text-left transition-all text-sm ${role === r.value ? 'border-primary bg-primary/10 neon-glow-green' : 'border-border bg-muted/30 hover:bg-muted/50'}`}>
+                    <span className="text-lg">{r.icon}</span>
+                    <p className="font-medium text-xs mt-1">{r.label}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="r-name">Full Name</Label>
+              <Input id="r-name" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} className="mt-1 bg-muted/50 border-border" required />
+            </div>
+            <div>
+              <Label htmlFor="r-email">Email</Label>
+              <Input id="r-email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="mt-1 bg-muted/50 border-border" required />
+            </div>
+            <div>
+              <Label htmlFor="r-phone">Phone</Label>
+              <Input id="r-phone" type="tel" placeholder="+91 98765 43210" value={phone} onChange={e => setPhone(e.target.value)} className="mt-1 bg-muted/50 border-border" required />
+            </div>
+            <div>
+              <Label htmlFor="r-pass">Password</Label>
+              <div className="relative mt-1">
+                <Input id="r-pass" type={showPassword ? 'text' : 'password'} placeholder="Min. 6 characters" value={password} onChange={e => setPassword(e.target.value)} className="bg-muted/50 border-border pr-10" required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <Button type="submit" className="w-full gradient-neon text-background font-semibold hover:opacity-90 neon-glow-green" disabled={loading}>
+              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Create Account
+            </Button>
+          </form>
 
           <p className="text-sm text-center text-muted-foreground mt-6">
             Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link>
