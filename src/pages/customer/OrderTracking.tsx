@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useOrders } from '@/contexts/OrderContext';
 import { mockRestaurants } from '@/data/mock-data';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, CheckCircle2, Clock, ChefHat, Truck, Package, Timer } from 'lucide-react';
+import { ArrowLeft, MapPin, CheckCircle2, Clock, ChefHat, Truck, Package, Timer, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
+import ReviewDialog from '@/components/ReviewDialog';
 
 const statusSteps = [
   { key: 'placed', label: 'Order Placed', icon: Package },
@@ -85,13 +86,23 @@ export default function OrderTracking() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { orders } = useOrders();
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [hasPrompted, setHasPrompted] = useState(false);
 
   const order = orders.find(o => o.id === id);
-  if (!order) return <div className="container py-20 text-center text-muted-foreground">Order not found</div>;
+  const restaurant = order ? mockRestaurants.find(r => r.id === order.restaurantId) : undefined;
+  const currentStepIndex = order ? statusSteps.findIndex(s => s.key === order.status) : -1;
+  const isActive = order ? !['delivered', 'cancelled'].includes(order.status) : false;
 
-  const restaurant = mockRestaurants.find(r => r.id === order.restaurantId);
-  const currentStepIndex = statusSteps.findIndex(s => s.key === order.status);
-  const isActive = !['delivered', 'cancelled'].includes(order.status);
+  // Auto-prompt review when delivered
+  useEffect(() => {
+    if (order?.status === 'delivered' && !hasPrompted) {
+      const t = setTimeout(() => { setReviewOpen(true); setHasPrompted(true); }, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [order?.status, hasPrompted]);
+
+  if (!order) return <div className="container py-20 text-center text-muted-foreground">Order not found</div>;
 
   return (
     <div className="container px-4 py-8 max-w-2xl">
