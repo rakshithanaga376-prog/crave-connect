@@ -199,13 +199,21 @@ export default function OrderTracking() {
         </div>
       </div>
 
-      <div className="glass-card p-5">
-        <h3 className="font-semibold mb-2">Delivery Address</h3>
-        <p className="text-sm text-muted-foreground flex items-center gap-2"><MapPin className="w-4 h-4" /> {order.deliveryAddress}</p>
-        {order.scheduledTime && (
-          <p className="text-sm text-neon-cyan mt-2 flex items-center gap-2"><Clock className="w-4 h-4" /> Scheduled: {new Date(order.scheduledTime).toLocaleString('en-IN')}</p>
-        )}
-      </div>
+      {order.status === 'delivered' && (
+        <div className="mt-4">
+          <Button onClick={() => setReviewOpen(true)} className="w-full gradient-neon text-background font-semibold hover:opacity-90 neon-glow-green">
+            <Star className="w-4 h-4 mr-2" /> Rate this Order
+          </Button>
+        </div>
+      )}
+
+      <ReviewDialog
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        orderId={order.id}
+        restaurantId={order.restaurantId}
+        restaurantName={restaurant?.name || 'Restaurant'}
+      />
     </div>
   );
 }
